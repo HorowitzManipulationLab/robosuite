@@ -114,6 +114,18 @@ def arm_controller_factory(name, params):
             interpolator.set_states(dim=3)  # EE control uses dim 3 for pos
         params["control_ori"] = False
         return arm_controllers.OperationalSpaceController(interpolator_pos=interpolator, **params)
+    
+    if name == "GIC_POSE":
+        ori_interpolator = None
+        if interpolator is not None:
+            interpolator.set_states(dim=3)  # EE control uses dim 3 for pos and ori each
+            ori_interpolator = deepcopy(interpolator)
+            ori_interpolator.set_states(ori="euler")
+        params["control_ori"] = True
+        return arm_controllers.GeometricImpedanceController(
+            interpolator_pos=interpolator, interpolator_ori=ori_interpolator, **params
+        )
+
 
     if name == "IK_POSE":
         ori_interpolator = None

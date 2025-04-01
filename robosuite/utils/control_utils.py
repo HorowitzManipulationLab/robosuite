@@ -110,6 +110,44 @@ def orientation_error(desired, current):
 
     return error
 
+def hat_map(v):
+    """
+    Hat map operator for a 3D vector or 6D vector
+    Args:
+        v (np.array): 1D array representing a 3D vector, or 6D Vector
+
+    Returns:
+        np.array: 2D array representing the skew-symmetric matrix of the input vector for 3D case,
+                    or 4x4 matrix for 6D case
+    """
+    if len(v) == 3: # so(3)
+        return np.array([[0, -v[2], v[1]], 
+                         [v[2], 0, -v[0]], 
+                         [-v[1], v[0], 0]])
+    elif len(v) == 6: # se(3)
+        return np.array([[0, -v[5], v[4], v[0]], 
+                         [v[5], 0, -v[3], v[1]], 
+                         [-v[4], v[3], 0, v[2]], 
+                         [0, 0, 0, 0]])
+    else:
+        raise ValueError("Input vector must be 3D or 6D")
+
+def vee_map(mat):
+    """
+    Vee map operator for a 3x3 matrix or 4x4 matrix
+    Args:
+        mat (np.array): 2D array representing a 3x3 matrix or 4x4 matrix
+
+    Returns:
+        np.array: 1D array representing the vee-map of the input matrix
+    """
+    if mat.shape == (3, 3): # so(3)
+        return np.array([mat[2, 1], mat[0, 2], mat[1, 0]])
+    elif mat.shape == (4, 4): # se(3)
+        return np.array([mat[0, 3], mat[1, 3], mat[2, 3], mat[2, 1], mat[0, 2], mat[1, 0]])
+    else:
+        raise ValueError("Input matrix must be 3x3 or 4x4")
+
 
 def set_goal_position(delta, current_position, position_limit=None, set_pos=None):
     """

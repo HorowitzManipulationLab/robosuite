@@ -31,7 +31,7 @@ def is_part_controller_config(config: Dict):
         bool: True if the config is in the for the arm-only, False otherwise
     """
 
-    PART_CONTROLLER_TYPES = ["JOINT_VELOCITY", "JOINT_TORQUE", "JOINT_POSITION", "OSC_POSITION", "OSC_POSE", "IK_POSE"]
+    PART_CONTROLLER_TYPES = ["JOINT_VELOCITY", "JOINT_TORQUE", "JOINT_POSITION", "OSC_POSITION", "OSC_POSE", "IK_POSE", "GIC_POSE"]
     if "body_parts" not in config and "type" in config:
         return config["type"] in PART_CONTROLLER_TYPES
     return False
@@ -108,9 +108,11 @@ def load_composite_controller_config(controller: Optional[str] = None, robot: Op
             ), f"Controller {controller} not found in COMPOSITE_CONTROLLERS_DICT"
             # Load from robosuite/controllers/config/default/composite/
             controller_name = controller.lower()
+            #NOTE(JS) To be compatible with the source build
             controller_fpath = (
                 pathlib.Path(robosuite.__file__).parent / f"controllers/config/default/composite/{controller_name}.json"
             )
+            ##################
     else:
         raise ValueError("Controller must be None or a string.")
 
