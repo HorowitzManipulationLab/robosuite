@@ -413,6 +413,8 @@ class GeometricImpedanceController(Controller):
         # Update state
         self.update()
 
+        # print("Running GIC Controller")
+
         desired_world_pos = None
         # Only linear interpolator is currently supported
         if self.interpolator_pos is not None:
@@ -453,12 +455,17 @@ class GeometricImpedanceController(Controller):
         p = self.ref_pos
         R = self.ref_ori_mat
 
+        print("p, pd:", p, pd)
+        print("R, Rd:", R, Rd)
+
         # Compute velocity in the base frame
         base_pos_vel = np.array(self.sim.data.get_site_xvelp(f"{self.naming_prefix}{self.part_name}_center"))
         base_ori_vel = np.array(self.sim.data.get_site_xvelr(f"{self.naming_prefix}{self.part_name}_center"))
 
         # Compute body-frame velocity
-        Vb = np.concatenate([R.T @ base_pos_vel, R.T @ base_ori_vel])
+        Vb = np.concatenate([R.T @ (self.ref_pos_vel - base_pos_vel), R.T @ (self.ref_ori_vel- base_ori_vel)])
+
+        print("V_pos, V_ori:", base_pos_vel, base_ori_vel)
 
         # GIC Implementation
         Kp = np.diag(self.kp[0:3])
@@ -482,7 +489,7 @@ class GeometricImpedanceController(Controller):
 
         # Unlike OSC, GIC does not consider decoupled torques
         #NOTE(JS) but I just made J_pos_body and J_ori_body because I don't want to change the opspace_matrices function
-        desired_wrench = - fg - Kd @ Vb
+        desired_wrench = - fg - Kd @ (Vb)
         decoupled_wrench = np.dot(lambda_full, desired_wrench)
 
         # Gamma (without null torques) = J^T * F + gravity compensations
