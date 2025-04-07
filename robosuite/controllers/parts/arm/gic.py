@@ -487,6 +487,8 @@ class GeometricImpedanceController(Controller):
         desired_wrench = - fg - Kd @ (Vb)
         decoupled_wrench = np.dot(lambda_full, desired_wrench)
 
+        # print(decoupled_wrench + J_body @ self.torque_compensation)
+
         # Gamma (without null torques) = J^T * F + gravity compensations
         self.torques = np.dot(J_body.T, decoupled_wrench) + self.torque_compensation
         # Calculate and add nullspace torques (nullspace_matrix^T * Gamma_null) to final torques
@@ -500,6 +502,8 @@ class GeometricImpedanceController(Controller):
 
         # Always run superclass call for any cleanups at the end
         super().run_controller()
+
+        # print(self.torques)
 
         return self.torques
 

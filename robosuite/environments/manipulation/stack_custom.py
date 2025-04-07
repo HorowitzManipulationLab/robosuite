@@ -11,8 +11,10 @@ from robosuite.utils.observables import Observable, sensor
 from robosuite.utils.placement_samplers import UniformRandomSampler
 from robosuite.utils.transform_utils import convert_quat
 
+#NOTE(JS): Trying Custom Environment. Not Working Well. Need to work on proper way. 
 
-class Stack(ManipulationEnv):
+
+class StackCustom(ManipulationEnv):
     """
     This class corresponds to the stacking task for a single robot arm.
 
@@ -175,6 +177,8 @@ class Stack(ManipulationEnv):
         camera_segmentations=None,  # {None, instance, class, element}
         renderer="mjviewer",
         renderer_config=None,
+        cubeA_size = 0.02,
+        cubeB_size = 0.025,
     ):
         # settings for table top
         self.table_full_size = table_full_size
@@ -190,6 +194,10 @@ class Stack(ManipulationEnv):
 
         # object placement initializer
         self.placement_initializer = placement_initializer
+
+        # cube sizes
+        self.cubeA_size = cubeA_size
+        self.cubeB_size = cubeB_size
 
         super().__init__(
             robots=robots,
@@ -354,15 +362,15 @@ class Stack(ManipulationEnv):
         )
         self.cubeA = BoxObject(
             name="cubeA",
-            size_min=[0.0125, 0.0125, 0.0125],
-            size_max=[0.0125, 0.0125, 0.0125],
+            size_min=[self.cubeA_size, self.cubeA_size, self.cubeA_size],
+            size_max=[self.cubeA_size, self.cubeA_size, self.cubeA_size],
             rgba=[1, 0, 0, 1],
             material=redwood,
         )
         self.cubeB = BoxObject(
             name="cubeB",
-            size_min=[0.02, 0.02, 0.02],
-            size_max=[0.02, 0.02, 0.02],
+            size_min=[self.cubeB_size, self.cubeB_size, self.cubeB_size],
+            size_max=[self.cubeB_size, self.cubeB_size, self.cubeB_size],
             rgba=[0, 1, 0, 1],
             material=greenwood,
         )

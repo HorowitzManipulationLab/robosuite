@@ -410,6 +410,7 @@ class OperationalSpaceController(Controller):
         Returns:
              np.array: Command torques
         """
+
         # Update state
         self.update()
 
