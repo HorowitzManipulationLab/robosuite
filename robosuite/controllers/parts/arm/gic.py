@@ -455,17 +455,12 @@ class GeometricImpedanceController(Controller):
         p = self.ref_pos
         R = self.ref_ori_mat
 
-        print("p, pd:", p, pd)
-        print("R, Rd:", R, Rd)
-
         # Compute velocity in the base frame
         base_pos_vel = np.array(self.sim.data.get_site_xvelp(f"{self.naming_prefix}{self.part_name}_center"))
         base_ori_vel = np.array(self.sim.data.get_site_xvelr(f"{self.naming_prefix}{self.part_name}_center"))
 
         # Compute body-frame velocity
         Vb = np.concatenate([R.T @ (self.ref_pos_vel - base_pos_vel), R.T @ (self.ref_ori_vel- base_ori_vel)])
-
-        print("V_pos, V_ori:", base_pos_vel, base_ori_vel)
 
         # GIC Implementation
         Kp = np.diag(self.kp[0:3])
