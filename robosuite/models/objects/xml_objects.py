@@ -34,6 +34,7 @@ class CanObject(MujocoXMLObject):
         )
 
 
+
 class LemonObject(MujocoXMLObject):
     """
     Lemon object
@@ -297,3 +298,32 @@ class DoorObject(MujocoXMLObject):
         dic = super().important_sites
         dic.update({"handle": self.naming_prefix + "handle"})
         return dic
+
+#NOTE(JS) ADDED
+class CustomHoleObject(MujocoXMLObject):
+    """
+    Custom hole object (used in Peg in Hole)
+    """
+
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/custom_hole.xml"),
+            name=name,
+            joints= None,
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )
+
+class CustomPegObject(MujocoXMLObject):
+    """
+    Coke peg object (used in Peg in Hole)
+    """
+
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/custom_peg.xml"),
+            name=name,
+            joints= [dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )

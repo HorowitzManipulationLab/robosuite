@@ -13,6 +13,10 @@ from robosuite.environments.manipulation.two_arm_peg_in_hole import TwoArmPegInH
 from robosuite.environments.manipulation.two_arm_handover import TwoArmHandover
 from robosuite.environments.manipulation.two_arm_transport import TwoArmTransport
 
+
+from robosuite.environments.manipulation.peg_in_hole import PegInHole
+from robosuite.environments.manipulation.stack_custom import StackCustom
+
 from robosuite.environments import ALL_ENVIRONMENTS
 from robosuite.controllers import (
     ALL_PART_CONTROLLERS,
