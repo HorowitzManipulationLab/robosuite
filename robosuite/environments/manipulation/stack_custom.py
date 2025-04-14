@@ -11,6 +11,8 @@ from robosuite.utils.observables import Observable, sensor
 from robosuite.utils.placement_samplers import UniformRandomSampler
 from robosuite.utils.transform_utils import convert_quat
 
+from scipy.spatial.transform import Rotation as R
+
 #NOTE(JS): Trying Custom Environment. Not Working Well. Need to work on proper way. 
 
 
@@ -177,8 +179,9 @@ class StackCustom(ManipulationEnv):
         camera_segmentations=None,  # {None, instance, class, element}
         renderer="mjviewer",
         renderer_config=None,
-        cubeA_size = 0.02,
-        cubeB_size = 0.025,
+        fix_initial_cube_pose = False,
+        cubeA_size = 0.0125,
+        cubeB_size = 0.02,
     ):
         # settings for table top
         self.table_full_size = table_full_size
@@ -194,6 +197,9 @@ class StackCustom(ManipulationEnv):
 
         # object placement initializer
         self.placement_initializer = placement_initializer
+
+        # fix initial cube pose
+        self.fix_initial_cube_pose = fix_initial_cube_pose
 
         # cube sizes
         self.cubeA_size = cubeA_size
@@ -426,6 +432,26 @@ class StackCustom(ManipulationEnv):
             # Loop through all objects and reset their positions
             for obj_pos, obj_quat, obj in object_placements.values():
                 self.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([np.array(obj_pos), np.array(obj_quat)]))
+
+        if self.fix_initial_cube_pose:
+            pos_cubeA_world = np.array([0.018, 0.068, 0.8225])
+            rotm_cubeA_world = np.array([[ 0.90203619, -0.43166042,  0.        ],
+                                        [ 0.43166042,  0.90203619,  0.        ],
+                                        [ 0.        ,  0.        ,  1.        ]])
+
+            pos_cubeB_world = np.array([-0.06605931, -0.07676506,  0.83      ])
+            rotm_cubeB_world = np.array([[ 0.49611262,  0.86825818 , 0.        ],
+                                        [-0.86825818,  0.49611262 , 0.        ],
+                                        [ 0.        ,  0.         , 1.        ]])
+            
+            quat_cubeA_world = R.from_matrix(rotm_cubeA_world).as_quat(scalar_first = True)
+            quat_cubeB_world = R.from_matrix(rotm_cubeB_world).as_quat(scalar_first = True)
+            
+            # Set the position and rotation of cubeA
+            self.sim.data.set_joint_qpos(self.cubeA.joints[0], np.concatenate([pos_cubeA_world, quat_cubeA_world]))
+            # Set the position and rotation of cubeB
+
+            self.sim.data.set_joint_qpos(self.cubeB.joints[0], np.concatenate([pos_cubeB_world, quat_cubeB_world]))
 
     def _setup_observables(self):
         """
