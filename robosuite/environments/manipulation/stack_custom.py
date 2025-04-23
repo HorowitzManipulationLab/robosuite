@@ -180,6 +180,7 @@ class StackCustom(ManipulationEnv):
         renderer="mjviewer",
         renderer_config=None,
         fix_initial_cube_pose = False,
+        training = False,
         cubeA_size = 0.0125,
         cubeB_size = 0.02,
     ):
@@ -200,6 +201,7 @@ class StackCustom(ManipulationEnv):
 
         # fix initial cube pose
         self.fix_initial_cube_pose = fix_initial_cube_pose
+        self.training = training
 
         # cube sizes
         self.cubeA_size = cubeA_size
@@ -452,6 +454,16 @@ class StackCustom(ManipulationEnv):
             # Set the position and rotation of cubeB
 
             self.sim.data.set_joint_qpos(self.cubeB.joints[0], np.concatenate([pos_cubeB_world, quat_cubeB_world]))
+
+        if self.training:
+            pos_cubeA_world = np.array([0.018, 0.068, 0.8225])
+            rotm_cubeA_world = np.array([[ 0.90203619, -0.43166042,  0.        ],
+                                        [ 0.43166042,  0.90203619,  0.        ],
+                                        [ 0.        ,  0.        ,  1.        ]])
+            quat_cubeA_world = R.from_matrix(rotm_cubeA_world).as_quat(scalar_first = True)
+
+            self.sim.data.set_joint_qpos(self.cubeA.joints[0], np.concatenate([pos_cubeA_world, quat_cubeA_world]))
+
 
     def _setup_observables(self):
         """
